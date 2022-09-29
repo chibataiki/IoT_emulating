@@ -1,5 +1,5 @@
 # IoT_emulating
-Some iot emulating samples with qiling. 
+Some iot emulating examples with qiling. 
 
 
 
