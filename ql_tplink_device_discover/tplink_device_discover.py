@@ -39,6 +39,7 @@ def hook_004034D4(ql: Qiling):
 
 def my_sandbox(path, rootfs):
     ql = Qiling(path, rootfs, verbose=QL_VERBOSE.DEFAULT)
+    ql.root = True
     ql.debugger = True
 
     call_protocol_handler_addr = 0x00403540
@@ -46,12 +47,12 @@ def my_sandbox(path, rootfs):
     init_sock_addr = 0x00402BA8
     after_initrsock_addr = 0x004038E8
 
-    # after finish sock init, junt to packet handle function
+    #hook_init_sock()
+    # after finish sock init, jump to packet handle function
     ql.hook_address(hook_to_packet_handle,after_initrsock_addr)
     ql.hook_address(hook_004034D4, 0x04034D4)
-    # ql.patch(0x0040BAC0, b'ens160\x00')
+    ql.patch(0x0040BAC0, b'lo\x00')
     ql.os.set_api('setsockopt', my_setsockopt, QL_INTERCEPT.CALL)
-
     ql.os.set_api('sendto', my_sendto,QL_INTERCEPT.CALL)
 
     ql.run()
@@ -59,5 +60,4 @@ def my_sandbox(path, rootfs):
 if __name__ == "__main__":
     cur_dir = os.path.abspath(".")
     my_sandbox([cur_dir+"/rootfs/device_discover"], cur_dir+"/rootfs")
-    # my_sandbox(["/rootfs/device_discover"], "rootfs")
 

