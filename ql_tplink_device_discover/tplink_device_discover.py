@@ -37,6 +37,11 @@ def hook_to_packet_handle(ql: Qiling):
 def hook_004034D4(ql: Qiling):
     ql.arch.regs.write("v0", 0x1)
 
+def hook_common_timer(ql: Qiling):
+    ql.arch.regs.write("v0",0x1)
+def hook_0x4056e0(ql: Qiling):
+    # 00403220 common_timer
+    ql.arch.regs.write("pc",0x00403220)
 def my_sandbox(path, rootfs):
     ql = Qiling(path, rootfs, verbose=QL_VERBOSE.DEFAULT)
     ql.root = True
@@ -46,12 +51,14 @@ def my_sandbox(path, rootfs):
     main_addr = 0x0403660
     init_sock_addr = 0x00402BA8
     after_initrsock_addr = 0x004038E8
-
+    to_common_timer =  0x00403488
     #hook_init_sock()
     # after finish sock init, jump to packet handle function
     ql.hook_address(hook_to_packet_handle,after_initrsock_addr)
     ql.hook_address(hook_004034D4, 0x04034D4)
     ql.patch(0x0040BAC0, b'lo\x00')
+    ql.hook_address(hook_common_timer,to_common_timer)
+  #  ql.hook_address(hook_0x4056e0,0x4056e0)
     ql.os.set_api('setsockopt', my_setsockopt, QL_INTERCEPT.CALL)
     ql.os.set_api('sendto', my_sendto,QL_INTERCEPT.CALL)
 
