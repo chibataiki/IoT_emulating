@@ -6,4 +6,4 @@ Some iot emulating examples with qiling.
 
 ## qiling 
 
-[tplink device discover]()
+[tplink device discover](./ql_tplink_device_discover)
